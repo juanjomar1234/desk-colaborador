@@ -16,7 +16,9 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
-        JWT_SECRET_KEY='jwt-secret-key'  # Clave para JWT
+        JWT_SECRET_KEY='jwt-secret-key',  # Clave para JWT
+        JWT_ACCESS_TOKEN_EXPIRES=False,  # No expirar tokens en pruebas
+        JWT_ERROR_MESSAGE_KEY='message'  # Clave para mensajes de error
     )
 
     if test_config is not None:
@@ -49,25 +51,26 @@ def create_app(test_config=None):
         from .models.user import User
         
         # Crear permisos y roles por defecto si no existen
-        if Permission.query.count() == 0:
-            permisos = [
-                Permission(name='read_users', description='Leer usuarios'),
-                Permission(name='create_users', description='Crear usuarios'),
-                Permission(name='update_users', description='Actualizar usuarios'),
-                Permission(name='delete_users', description='Eliminar usuarios'),
-                Permission(name='manage_roles', description='Gestionar roles')
-            ]
-            db.session.add_all(permisos)
-            db.session.commit()
+        with db.session.no_autoflush:
+            if Permission.query.count() == 0:
+                permisos = [
+                    Permission(name='read_users', description='Leer usuarios'),
+                    Permission(name='create_users', description='Crear usuarios'),
+                    Permission(name='update_users', description='Actualizar usuarios'),
+                    Permission(name='delete_users', description='Eliminar usuarios'),
+                    Permission(name='manage_roles', description='Gestionar roles')
+                ]
+                db.session.add_all(permisos)
+                db.session.commit()
 
-        if Role.query.count() == 0:
-            admin_role = Role(name='admin', description='Administrador')
-            user_role = Role(name='user', description='Usuario estándar')
-            
-            admin_role.permissions = Permission.query.all()
-            user_role.permissions = [Permission.query.filter_by(name='read_users').first()]
-            
-            db.session.add_all([admin_role, user_role])
-            db.session.commit()
+            if Role.query.count() == 0:
+                admin_role = Role(name='admin', description='Administrador')
+                user_role = Role(name='user', description='Usuario estándar')
+                
+                admin_role.permissions = Permission.query.all()
+                user_role.permissions = [Permission.query.filter_by(name='read_users').first()]
+                
+                db.session.add_all([admin_role, user_role])
+                db.session.commit()
 
     return app
