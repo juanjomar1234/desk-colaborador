@@ -1,27 +1,17 @@
 #!/usr/bin/env python3
-import sys
 import os
+import sys
 
-print("Content-Type: text/html\n")
-print("""
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Debug Info</title>
-</head>
-<body>
-    <h1>Python Debug Info</h1>
-    <pre>
-""")
+# Añadir el directorio actual al path de Python
+sys.path.insert(0, os.path.dirname(__file__))
 
-print("Python Version:", sys.version)
-print("\nPython Path:", sys.path)
-print("\nEnvironment Variables:")
-for key, value in os.environ.items():
-    print(f"{key}: {value}")
+# Configurar variables de entorno para Flask
+os.environ['FLASK_APP'] = 'frontend_service.app'
+os.environ['FLASK_ENV'] = 'production'
 
-print("""
-    </pre>
-</body>
-</html>
-""") 
+from frontend_service.app import app
+from wsgiref.handlers import CGIHandler
+
+if __name__ == "__main__":
+    print("Content-Type: text/html\n")
+    CGIHandler().run(app) 
