@@ -69,6 +69,7 @@ class TestAuthService(unittest.TestCase):
         
         response = self.client.get('/auth/user',
             headers={"Authorization": f"Bearer {token}"})
+        print(f"\nResponse: {response.json}")
         self.assertEqual(response.status_code, 200)
 
 class TestFrontendService(unittest.TestCase):
