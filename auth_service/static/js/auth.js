@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       try {
-        const response = await fetch('/login', {
+        const auth_url = process.env.AUTH_SERVICE_URL || 'http://auth:8000';  // Cambiar a http://auth:8000 para Docker
+        const response = await fetch(`${auth_url}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

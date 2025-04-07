@@ -22,7 +22,7 @@ def require_auth(f=None):
             return redirect('/login')  # Ya no es /auth/login
 
         # Verificar token con auth-service
-        auth_url = os.environ.get('AUTH_SERVICE_URL', 'http://localhost:8000')  # Actualizar URL por defecto
+        auth_url = os.environ.get('AUTH_SERVICE_URL', 'http://auth:8000')  # Cambiar a http://auth:8000 para Docker
         try:
             response = requests.get(
                 f"{auth_url}/verify",  # Ya no es /auth/verify
