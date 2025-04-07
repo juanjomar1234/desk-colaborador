@@ -10,6 +10,23 @@ class TestAuthService(unittest.TestCase):
         from auth_service import create_app
         cls.app = create_app({'TESTING': True})
         cls.client = cls.app.test_client()
+        cls.ctx = cls.app.app_context()
+        cls.ctx.push()  # Push the context
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.ctx.pop()  # Remove the context when done
+
+    def setUp(self):
+        with self.app.app_context():
+            from auth_service import db
+            db.create_all()
+
+    def tearDown(self):
+        with self.app.app_context():
+            from auth_service import db
+            db.session.remove()
+            db.drop_all()
 
     def test_login_endpoint(self):
         """Prueba el endpoint de login con credenciales correctas"""
