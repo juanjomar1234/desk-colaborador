@@ -36,11 +36,7 @@ def login():
         
         # Para pruebas, aceptar credenciales de test
         if data['username'] == 'test' and data['password'] == 'test':
-            access_token = create_access_token(identity={
-                'id': 1,
-                'username': 'test',
-                'role': 'test'
-            })
+            access_token = create_access_token(identity='test')
             return jsonify({
                 'message': 'Login successful',
                 'access_token': access_token
@@ -49,11 +45,7 @@ def login():
         # Buscar usuario real
         user = User.query.filter_by(username=data['username']).first()
         if user and user.check_password(data['password']):
-            access_token = create_access_token(identity={
-                'id': user.id,
-                'username': user.username,
-                'role': user.role
-            })
+            access_token = create_access_token(identity=user.username)
             return jsonify({
                 'message': 'Login successful',
                 'access_token': access_token
