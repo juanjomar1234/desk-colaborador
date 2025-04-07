@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+Options +ExecCGI
+AddHandler cgi-script .py
+DirectoryIndex index.py
+
+<Files "index.py">
+    Options +ExecCGI
+    SetHandler cgi-script
+</Files> 
