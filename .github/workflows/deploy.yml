@@ -10,6 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Copy files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "."
+          target: "${{ secrets.DEPLOY_PATH }}/tmp"
+
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -18,5 +28,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ${{ secrets.DEPLOY_PATH }}
-            git pull origin main
+            mkdir -p ${{ secrets.DEPLOY_PATH }}/tmp
+            cd ${{ secrets.DEPLOY_PATH }}/tmp
+            rm -rf *
+            cp -r * ../ 
+            cd ..
+            rm -rf tmp
