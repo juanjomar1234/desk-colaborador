@@ -24,7 +24,8 @@ try:
     os.environ['FLASK_ENV'] = 'production'
     os.environ['AUTH_SERVICE_URL'] = 'https://portalcolaborador.uno14.trading/auth'
 
-    from flask import Flask, session, redirect
+    from flask import Flask, session, redirect, render_template_string
+
     app = Flask(__name__)
     app.secret_key = 'your-secret-key-here'  # Necesario para session
 
@@ -33,6 +34,14 @@ try:
         if 'token' not in session:
             return redirect('https://portalcolaborador.uno14.trading/auth/login')
         return "Logged in!"
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template_string("""
+            <h1>Página no encontrada</h1>
+            <p>La página que buscas no existe.</p>
+            <a href="/">Volver al inicio</a>
+        """), 404
 
     if __name__ == "__main__":
         print("Content-Type: text/html\n")
