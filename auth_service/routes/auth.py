@@ -5,6 +5,21 @@ from .. import db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+@auth_bp.route('/')
+def index():
+    """Página de inicio del servicio de autenticación"""
+    return jsonify({
+        'service': 'Auth Service',
+        'version': '1.0',
+        'endpoints': {
+            'login': '/auth/login',
+            'register': '/auth/register',
+            'verify': '/auth/verify',
+            'user': '/auth/user',
+            'check-auth': '/auth/check-auth'
+        }
+    })
+
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
