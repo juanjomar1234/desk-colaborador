@@ -17,17 +17,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: |
-            auth-service/
-            frontend-service/
-            *.py
-            *.md
-            *.yml
-            !.git/
-            !.github/
-            !docker-compose*.yml
-            !test_*.py
-            !run_*.sh
+          source: "auth-service/**,frontend-service/**,*.py,*.md,*.yml"
           target: "${{ secrets.DEPLOY_PATH }}"
           rm: true
           strip_components: 0
+          overwrite: true
