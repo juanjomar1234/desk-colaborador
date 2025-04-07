@@ -74,4 +74,16 @@ jobs:
           chmod -R 755 ${{ secrets.DEPLOY_PATH }}
           find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
           chmod +x ${{ secrets.DEPLOY_PATH }}/wsgi.py
-          chmod +x ${{ secrets.DEPLOY_PATH }}/frontend_service/wsgi.py 
+          chmod +x ${{ secrets.DEPLOY_PATH }}/frontend_service/wsgi.py
+
+    - name: Execute deploy script
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd ${{ secrets.DEPLOY_PATH }}
+          chmod +x deploy.sh
+          ./deploy.sh 
