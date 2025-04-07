@@ -80,25 +80,25 @@ Para ejecutar las pruebas automatizadas:
 ### 1. Preparación del Repositorio
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/username/repo-name.git
-   cd repo-name
+   git clone https://github.com/juanjomar1234/desk-colaborador.git
+   cd desk-colaborador
    ```
 
 ### 2. Configuración de Secretos en GitHub
 1. Ir a Settings > Secrets and variables > Actions
 2. Añadir los siguientes secretos:
-   - DOCKER_HUB_USERNAME
-   - DOCKER_HUB_ACCESS_TOKEN
-   - SERVER_HOST
-   - SERVER_USERNAME
-   - SERVER_SSH_KEY
+   - SSH_HOST
+   - SSH_USER
+   - SSH_PRIVATE_KEY
+   - SSH_PORT
+   - DEPLOY_PATH
 
 ### 3. Despliegue
 1. Hacer push al repositorio:
    ```bash
    git push origin main
    ```
-2. GitHub Actions ejecutará automáticamente el pipeline de despliegue
+2. GitHub Actions ejecutará automáticamente el despliegue
 
 ### 4. Acceso mediante Subdominio
 - Frontend: https://app.tudominio.com

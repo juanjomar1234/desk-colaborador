@@ -31,11 +31,7 @@
 
 ## Despliegue
 - [x] Preparar servicios para despliegue
-- [x] Desplegar aplicación
-- [x] Verificar funcionamiento en producción
-- [ ] Configurar repositorio GitHub
-- [ ] Implementar GitHub Actions
-- [ ] Configurar subdominio
-- [ ] Configurar Nginx como proxy inverso
-- [ ] Implementar SSL/TLS con Let's Encrypt
+- [x] Configurar repositorio GitHub
+- [x] Implementar GitHub Actions
+- [x] Configurar subdominio
 - [ ] Realizar pruebas de despliegue automatizado
