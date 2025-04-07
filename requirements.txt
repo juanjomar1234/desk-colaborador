@@ -1,2 +1,6 @@
 flask==2.0.3  # Última versión compatible con Python 3.6
-werkzeug==2.0.3 
+werkzeug==2.0.3
+click==7.1.2
+itsdangerous==2.0.1
+Jinja2==2.11.3
+MarkupSafe==2.0.1 

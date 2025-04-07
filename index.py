@@ -1,17 +1,37 @@
 #!/usr/bin/env python3
 import os
 import sys
+import logging
+import traceback
 
-# Añadir el directorio actual al path de Python
-sys.path.insert(0, os.path.dirname(__file__))
+# Configurar logging
+logging.basicConfig(
+    filename=os.path.join(os.path.dirname(__file__), 'app.log'),
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
-# Configurar variables de entorno para Flask
-os.environ['FLASK_APP'] = 'frontend_service.app'
-os.environ['FLASK_ENV'] = 'production'
+try:
+    # Añadir el directorio actual al path de Python
+    sys.path.insert(0, os.path.dirname(__file__))
+    logging.info(f"Python path: {sys.path}")
 
-from frontend_service.app import app
-from wsgiref.handlers import CGIHandler
+    # Configurar variables de entorno para Flask
+    os.environ['FLASK_APP'] = 'frontend_service.app'
+    os.environ['FLASK_ENV'] = 'production'
 
-if __name__ == "__main__":
+    from frontend_service.app import app
+    from wsgiref.handlers import CGIHandler
+
+    if __name__ == "__main__":
+        print("Content-Type: text/html\n")
+        CGIHandler().run(app)
+
+except Exception as e:
+    logging.error(f"Error: {str(e)}")
+    logging.error(f"Traceback: {traceback.format_exc()}")
     print("Content-Type: text/html\n")
-    CGIHandler().run(app) 
+    print("<h1>Internal Server Error</h1>")
+    print("<pre>")
+    print(traceback.format_exc())
+    print("</pre>") 
