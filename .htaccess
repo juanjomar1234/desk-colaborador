@@ -4,40 +4,14 @@ RewriteEngine On
 # Asegurarse que el directorio base es correcto
 RewriteBase /portalcolaborador/
 
-# Permitir ejecución de Python y CGI
-Options +ExecCGI +FollowSymLinks
-AddHandler cgi-script .py .cgi
-
-# Configuración de Python
-SetEnv PYTHONPATH /home/u396608776/domains/uno14.trading/public_html/portalcolaborador
-SetEnv FLASK_APP frontend_service
-SetEnv FLASK_ENV production
-
-# Asegurar que index.py es ejecutable
-<Files "index.py">
-    Options +ExecCGI
-    SetHandler cgi-script
-    Require all granted
-</Files>
+# Usar passenger_wsgi.py como punto de entrada
+PassengerEnabled on
+PassengerPython /home/u396608776/domains/uno14.trading/public_html/portalcolaborador/venv/bin/python
 
 # Permitir acceso a archivos estáticos
 <FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico)$">
-    Require all granted
+    Allow from all
 </FilesMatch>
-
-# Redirigir todas las peticiones a index.py
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.py/$1 [QSA,L]
-
-# Configuración de seguridad
-<Files ~ "^\.">
-    Order allow,deny
-    Deny from all
-</Files>
-
-# Prevenir listado de directorios
-Options -Indexes
 
 # Configuración de CORS
 Header set Access-Control-Allow-Origin "*"
@@ -47,4 +21,17 @@ Header set Access-Control-Allow-Headers "Content-Type, Authorization"
 # Favicon
 <Files "favicon.ico">
     ForceType image/x-icon
-</Files> 
+</Files>
+
+# Redirigir todo a través de Passenger
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ passenger_wsgi.py/$1 [QSA,L]
+
+# Configuración de seguridad
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevenir listado de directorios
+Options -Indexes 
