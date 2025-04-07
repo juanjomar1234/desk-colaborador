@@ -11,7 +11,7 @@ def require_auth(f=None):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # No verificar autenticación para rutas de auth y static
-        if request.path.startswith('/auth/') or request.path.startswith('/static/'):
+        if request.path.startswith('/login') or request.path.startswith('/static/'):
             return f(*args, **kwargs)
 
         # Verificar token en sesión
@@ -19,21 +19,21 @@ def require_auth(f=None):
         if not token:
             # Guardar la URL original para redirigir después del login
             session['next_url'] = request.url
-            return redirect('/auth/login')
+            return redirect('/login')  # Ya no es /auth/login
 
         # Verificar token con auth-service
-        auth_url = os.environ.get('AUTH_SERVICE_URL', 'https://portalcolaborador.uno14.trading/auth')
+        auth_url = os.environ.get('AUTH_SERVICE_URL', 'http://localhost:8000')  # Actualizar URL por defecto
         try:
             response = requests.get(
-                f"{auth_url}/verify",
+                f"{auth_url}/verify",  # Ya no es /auth/verify
                 headers={'Authorization': f'Bearer {token}'}
             )
             if response.status_code != 200:
                 session.clear()
-                return redirect('/auth/login')
+                return redirect('/login')
         except:
             session.clear()
-            return redirect('/auth/login')
+            return redirect('/login')
 
         return f(*args, **kwargs)
     return decorated_function

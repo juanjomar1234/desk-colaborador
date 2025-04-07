@@ -16,37 +16,39 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       // Enviar solicitud de inicio de sesión al auth-service
-      const authServiceUrl = 'http://localhost:5000/api/auth/login';
-      
-      fetch(authServiceUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.access_token) {
-          // Guardar token en localStorage
-          localStorage.setItem('auth_token', data.access_token);
-          showMessage('Inicio de sesión exitoso', 'success');
-          
-          // Redireccionar a la página principal después de un breve retraso
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 1500);
-        } else {
-          showMessage(data.message || 'Error de inicio de sesión', 'error');
+      async function login(username, password) {
+        const auth_url = process.env.AUTH_SERVICE_URL || 'http://localhost:8000';
+        try {
+          const response = await fetch(`${auth_url}/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password
+            })
+          });
+          const data = await response.json();
+          if (data.access_token) {
+            // Guardar token en localStorage
+            localStorage.setItem('auth_token', data.access_token);
+            showMessage('Inicio de sesión exitoso', 'success');
+            
+            // Redireccionar a la página principal después de un breve retraso
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 1500);
+          } else {
+            showMessage(data.message || 'Error de inicio de sesión', 'error');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showMessage('Error al conectar con el servidor de autenticación', 'error');
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showMessage('Error al conectar con el servidor de autenticación', 'error');
-      });
+      }
+      
+      login(username, password);
     });
   }
   

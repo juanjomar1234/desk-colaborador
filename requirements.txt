@@ -1,9 +1,9 @@
-werkzeug>=2.3.0
 flask>=2.3.0
-click==7.1.2
-itsdangerous==2.0.1
+werkzeug>=2.3.0
+click>=8.0.0
+itsdangerous>=2.1.0
 Jinja2>=3.0
-MarkupSafe==2.0.1
+MarkupSafe>=2.1.1
 flask-cors>=4.0.0
 requests>=2.25.1
 flask-sqlalchemy>=3.0.0
@@ -12,4 +12,7 @@ flask-jwt-extended>=4.0.0
 # Dependencias de prueba
 pytest>=7.0.0
 pytest-flask>=1.2.0
-pytest-cov>=3.0.0 
+pytest-cov>=3.0.0
+python-dotenv>=1.0.0
+gunicorn>=21.2.0
+whitenoise>=6.0.0  # Para servir archivos estáticos 
