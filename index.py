@@ -20,14 +20,15 @@ try:
     logging.info(f"Python path: {sys.path}")
 
     # Configurar variables de entorno para Flask
-    os.environ['FLASK_APP'] = 'app'
+    os.environ['FLASK_APP'] = 'frontend-service'
     os.environ['FLASK_ENV'] = 'production'
 
-    from app import app
-    from wsgiref.handlers import CGIHandler
+    from frontend_service import create_app
+    app = create_app()
 
     if __name__ == "__main__":
         print("Content-Type: text/html\n")
+        from wsgiref.handlers import CGIHandler
         CGIHandler().run(app)
 
 except Exception as e:
