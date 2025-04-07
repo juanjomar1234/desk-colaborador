@@ -9,7 +9,10 @@ jwt = JWTManager()
 
 def create_app(test_config=None):
     # Crear y configurar la aplicación
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, 
+                instance_relative_config=True,
+                static_url_path='/static',
+                static_folder='static')
     
     # Configuración por defecto
     app.config.from_mapping(

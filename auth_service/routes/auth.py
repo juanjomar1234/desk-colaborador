@@ -46,27 +46,35 @@ def register():
 def login():
     if request.method == 'GET':
         return render_template('login.html')
-    elif request.method == 'POST':
-        data = request.get_json()
+    
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': 'No se recibieron datos'}), 400
         
-        # Para pruebas, aceptar credenciales de test
-        if data['username'] == 'test' and data['password'] == 'test':
-            access_token = create_access_token(identity='test')
-            return jsonify({
-                'message': 'Login successful',
-                'access_token': access_token
-            }), 200
-            
-        # Buscar usuario real
-        user = User.query.filter_by(username=data['username']).first()
-        if user and user.check_password(data['password']):
-            access_token = create_access_token(identity=user.username)
-            return jsonify({
-                'message': 'Login successful',
-                'access_token': access_token
-            }), 200
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'message': 'Faltan campos requeridos'}), 400
+    
+    # Para pruebas, aceptar credenciales de test
+    if username == 'test' and password == 'test':
+        access_token = create_access_token(identity='test')
+        return jsonify({
+            'message': 'Login successful',
+            'access_token': access_token
+        }), 200
         
-        return jsonify({'message': 'Invalid credentials'}), 401
+    # Buscar usuario real
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        access_token = create_access_token(identity=user.username)
+        return jsonify({
+            'message': 'Login successful',
+            'access_token': access_token
+        }), 200
+    
+    return jsonify({'message': 'Credenciales inválidas'}), 401
 
 @auth_bp.route('/verify', methods=['GET'])
 def verify():
