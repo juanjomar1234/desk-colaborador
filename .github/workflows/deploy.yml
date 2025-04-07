@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "auth-service/**,frontend-service/**,static/**,lib/**,*.py,*.md,*.yml,.htaccess"
+          source: "auth-service/**,frontend_service/**,static/**,lib/**,*.py,*.md,*.yml,.htaccess"
           target: "${{ secrets.DEPLOY_PATH }}"
           rm: true
           strip_components: 0
@@ -45,4 +45,4 @@ jobs:
             chmod -R 755 ${{ secrets.DEPLOY_PATH }}
             find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
             chmod +x ${{ secrets.DEPLOY_PATH }}/index.py
-            chmod +x ${{ secrets.DEPLOY_PATH }}/frontend-service/app.py
+            chmod +x ${{ secrets.DEPLOY_PATH }}/frontend_service/app.py
