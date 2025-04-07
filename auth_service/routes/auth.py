@@ -44,7 +44,6 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    import pdb; pdb.set_trace()  # Debug point
     if request.method == 'GET':
         return render_template('login.html')
     
