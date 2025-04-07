@@ -36,7 +36,6 @@ jobs:
             chmod +x ${{ secrets.DEPLOY_PATH }}/index.py
             chmod +x ${{ secrets.DEPLOY_PATH }}/frontend-service/app.py
             cd ${{ secrets.DEPLOY_PATH }}
-            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-            python3 get-pip.py --user
-            python3 -m pip install --user -r requirements.txt
-            rm get-pip.py
+            python3 -m pip install --target=${{ secrets.DEPLOY_PATH }}/lib -r requirements.txt
+            echo "${{ secrets.DEPLOY_PATH }}/lib" > ${{ secrets.DEPLOY_PATH }}/.pth
+            chmod 644 ${{ secrets.DEPLOY_PATH }}/.pth
