@@ -34,4 +34,4 @@
 - [x] Configurar repositorio GitHub
 - [x] Implementar GitHub Actions
 - [x] Configurar subdominio
-- [ ] Realizar pruebas de despliegue automatizado
+- [x] Realizar pruebas de despliegue automatizado

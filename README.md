@@ -98,8 +98,13 @@ Para ejecutar las pruebas automatizadas:
    ```bash
    git push origin main
    ```
-2. GitHub Actions ejecutará automáticamente el despliegue
+2. GitHub Actions ejecutará automáticamente el despliegue usando scp
 
 ### 4. Acceso mediante Subdominio
 - Frontend: https://app.tudominio.com
 - API Auth: https://app.tudominio.com/api/auth
+
+### 5. Configuración del Servidor
+- Python CGI habilitado
+- Permisos de archivos configurados automáticamente
+- Punto de entrada Python configurado

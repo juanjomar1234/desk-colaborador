@@ -469,7 +469,26 @@ mkdir -p .github/workflows
 touch .github/workflows/deploy.yml
 ```
 
-2. Contenido del archivo deploy.yml:
+2. Configurar punto de entrada Python y CGI:
+```bash
+# index.py - Punto de entrada principal
+from frontend_service.app import app
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+
+# .htaccess - Configuración del servidor web
+Options +ExecCGI
+AddHandler cgi-script .py
+DirectoryIndex index.py
+
+<Files "index.py">
+    Options +ExecCGI
+    SetHandler cgi-script
+</Files>
+```
+
+3. Contenido del archivo deploy.yml:
 ```yaml
 name: Deploy to Production
 
@@ -483,7 +502,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Deploy to Server
+      - name: Copy files to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "auth-service/**,frontend-service/**,*.py,*.md,*.yml,.htaccess"
+          target: "${{ secrets.DEPLOY_PATH }}"
+          rm: true
+          strip_components: 0
+          overwrite: true
+
+      - name: Set permissions
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -491,11 +523,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ${{ secrets.DEPLOY_PATH }}
-            git pull origin main
+            chmod -R 755 ${{ secrets.DEPLOY_PATH }}
+            find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
 ```
-
-3. El workflow se activará automáticamente con cada push a la rama main.
 
 ## 7. Pruebas
 
