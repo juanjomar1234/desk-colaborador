@@ -11,8 +11,9 @@ def create_app(test_config=None):
     # Crear y configurar la aplicación
     app = Flask(__name__, 
                 instance_relative_config=True,
-                static_url_path='/static',
-                static_folder='static')
+                static_url_path='',
+                static_folder='static',
+                template_folder='templates')
     
     # Configuración por defecto
     app.config.from_mapping(
@@ -33,14 +34,17 @@ def create_app(test_config=None):
     jwt.init_app(app)
     CORS(app)
 
-    # Registrar blueprints
+    # Registrar blueprints sin prefijo para auth_bp
     from .routes.auth import auth_bp
+    auth_bp.url_prefix = ''
+    app.register_blueprint(auth_bp)
+
+    # Registrar otros blueprints con sus prefijos
     from .routes.user import user_bp
     from .routes.role import role_bp
     from .routes.permission import permission_bp
     from .routes.views import auth_view_bp
     
-    app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
