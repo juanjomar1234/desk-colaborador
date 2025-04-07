@@ -9,13 +9,15 @@ def require_auth(f=None):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Excluir rutas de autenticación
-        if request.endpoint and request.endpoint.startswith('auth.'):
+        # No verificar autenticación para rutas de auth y static
+        if request.path.startswith('/auth/') or request.path.startswith('/static/'):
             return f(*args, **kwargs)
 
         # Verificar token en sesión
         token = session.get('token')
         if not token:
+            # Guardar la URL original para redirigir después del login
+            session['next_url'] = request.url
             return redirect('/auth/login')
 
         # Verificar token con auth-service
