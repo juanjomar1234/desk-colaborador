@@ -36,7 +36,13 @@ def create_app(test_config=None):
     # Inicializar extensiones
     db.init_app(app)
     jwt.init_app(app)
-    CORS(app)
+    CORS(app, resources={
+        r"/*": {
+            "origins": ["http://localhost:8001", "http://web:8001"],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
+        }
+    })
 
     # Registrar blueprints sin prefijo para auth_bp
     from .routes.auth import auth_bp

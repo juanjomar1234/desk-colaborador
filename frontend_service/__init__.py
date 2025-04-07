@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 def create_app(test_config=None):
     # Crear y configurar la aplicación
@@ -18,8 +19,11 @@ def create_app(test_config=None):
         # Cargar la configuración de prueba si se pasa
         app.config.from_mapping(test_config)
 
-    # Habilitar CORS
-    CORS(app)
+    # Configurar proxy para el servicio de autenticación
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+    
+    # Configurar CORS
+    CORS(app, supports_credentials=True)
 
     # Registrar blueprints
     from .routes.frontend import frontend_bp

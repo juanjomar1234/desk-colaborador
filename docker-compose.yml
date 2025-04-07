@@ -8,6 +8,7 @@ services:
     environment:
       - FLASK_APP=auth_service
       - FLASK_ENV=production
+      - CORS_ORIGINS=http://web:8001,http://localhost:8001
     volumes:
       - ./auth_service:/app/auth_service
 
@@ -20,6 +21,7 @@ services:
       - FLASK_APP=frontend_service
       - FLASK_ENV=production
       - AUTH_SERVICE_URL=http://auth:8000
+      - CORS_ORIGINS=http://auth:8000,http://localhost:8000
     volumes:
       - ./frontend_service:/app/frontend_service
     depends_on:
