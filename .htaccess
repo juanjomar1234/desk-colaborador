@@ -4,9 +4,12 @@ RewriteEngine On
 # Asegurarse que el directorio base es correcto
 RewriteBase /portalcolaborador/
 
-# Usar passenger_wsgi.py como punto de entrada
+# Configuración de Passenger
 PassengerEnabled on
 PassengerPython /home/u396608776/domains/uno14.trading/public_html/portalcolaborador/venv/bin/python
+PassengerAppRoot /home/u396608776/domains/uno14.trading/public_html/portalcolaborador
+PassengerAppType wsgi
+PassengerStartupFile passenger_wsgi.py
 
 # Permitir acceso a archivos estáticos
 <FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico)$">
