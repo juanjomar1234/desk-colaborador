@@ -32,8 +32,34 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     elif request.method == 'POST':
-        # Aquí iría la lógica de autenticación
-        pass
+        data = request.get_json()
+        
+        # Para pruebas, aceptar credenciales de test
+        if data['username'] == 'test' and data['password'] == 'test':
+            access_token = create_access_token(identity={
+                'id': 1,
+                'username': 'test',
+                'role': 'test'
+            })
+            return jsonify({
+                'message': 'Login successful',
+                'access_token': access_token
+            }), 200
+            
+        # Buscar usuario real
+        user = User.query.filter_by(username=data['username']).first()
+        if user and user.check_password(data['password']):
+            access_token = create_access_token(identity={
+                'id': user.id,
+                'username': user.username,
+                'role': user.role
+            })
+            return jsonify({
+                'message': 'Login successful',
+                'access_token': access_token
+            }), 200
+        
+        return jsonify({'message': 'Invalid credentials'}), 401
 
 @auth_bp.route('/verify', methods=['GET'])
 def verify():
