@@ -26,8 +26,8 @@ def create_app(test_config=None):
     CORS(app, supports_credentials=True)
 
     # Registrar blueprints
-    from .routes.frontend import frontend_bp
-    app.register_blueprint(frontend_bp)
+    from .routes.views import views_bp
+    app.register_blueprint(views_bp)
 
     return app
 

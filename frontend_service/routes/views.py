@@ -1,5 +1,7 @@
+from flask import Blueprint, redirect
 import os
-from flask import redirect
+
+views_bp = Blueprint('views', __name__)
 
 @views_bp.route('/login')
 def login():
