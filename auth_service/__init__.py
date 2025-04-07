@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+import os
 
 # Inicialización de extensiones
 db = SQLAlchemy()
@@ -15,10 +16,13 @@ def create_app(test_config=None):
                 static_folder='static',
                 template_folder='templates')
     
+    # Obtener la ruta absoluta para la base de datos
+    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'auth.sqlite')
+    
     # Configuración por defecto
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:///auth.sqlite',
+        SQLALCHEMY_DATABASE_URI=f'sqlite:///{db_path}',  # Usar ruta absoluta
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         JWT_SECRET_KEY='jwt-secret-key',  # Clave para JWT
         JWT_ACCESS_TOKEN_EXPIRES=False,  # No expirar tokens en pruebas
@@ -57,11 +61,11 @@ def create_app(test_config=None):
             'service': 'Auth Service',
             'version': '1.0',
             'endpoints': {
-                'login': '/auth/login',
-                'register': '/auth/register',
-                'verify': '/auth/verify',
-                'user': '/auth/user',
-                'check-auth': '/auth/check-auth'
+                'login': '/login',
+                'register': '/register',
+                'verify': '/verify',
+                'user': '/user',
+                'check-auth': '/check-auth'
             }
         })
 

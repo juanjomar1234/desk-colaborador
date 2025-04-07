@@ -33,13 +33,13 @@ class TestAuthService(unittest.TestCase):
 
     def test_login_endpoint(self):
         """Prueba el endpoint de login con credenciales correctas"""
-        response = self.client.post('/auth/login', 
+        response = self.client.post('/login', 
             json={'username': 'test', 'password': 'test'})
         self.assertEqual(response.status_code, 200)
     
     def test_login_invalid_credentials(self):
         """Prueba el endpoint de login con credenciales incorrectas"""
-        response = self.client.post('/auth/login',
+        response = self.client.post('/login',
             json={'username': 'admin', 'password': 'wrong_password'})
         self.assertEqual(response.status_code, 401)
     
@@ -48,7 +48,7 @@ class TestAuthService(unittest.TestCase):
         import random
         username = f"testuser_{random.randint(1000, 9999)}"
         
-        response = self.client.post('/auth/register',
+        response = self.client.post('/register',
             json={
                 "username": username,
                 "email": f"{username}@example.com",
@@ -59,18 +59,18 @@ class TestAuthService(unittest.TestCase):
     def test_protected_endpoint(self):
         """Prueba un endpoint protegido con y sin token"""
         # Sin token
-        response = self.client.get('/auth/user')
+        response = self.client.get('/user')
         self.assertIn(response.status_code, [401, 422])
         
         # Con token
-        login_response = self.client.post('/auth/login',
+        login_response = self.client.post('/login',
             json={'username': 'test', 'password': 'test'})
         
         self.assertEqual(login_response.status_code, 200)
         token = login_response.json.get("access_token")
         self.assertIsNotNone(token)
         
-        response = self.client.get('/auth/user',
+        response = self.client.get('/user',
             headers={"Authorization": f"Bearer {token}"})
         print(f"\nResponse: {response.json}")
         self.assertEqual(response.status_code, 200)

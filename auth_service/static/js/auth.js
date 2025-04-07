@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const loginForm = document.getElementById('login-form');
   
   if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const username = document.getElementById('username').value;
@@ -15,36 +15,32 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       
-      // Enviar solicitud de inicio de sesión
-      fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.access_token) {
-          // Guardar token en localStorage
-          localStorage.setItem('auth_token', data.access_token);
-          showMessage('Inicio de sesión exitoso', 'success');
-          
-          // Redireccionar a la página principal después de un breve retraso
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 1500);
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Guardar el token
+          localStorage.setItem('token', data.access_token);
+          // Redirigir al usuario
+          window.location.href = '/';
         } else {
-          showMessage(data.message || 'Error de inicio de sesión', 'error');
+          showMessage(data.message || 'Error al iniciar sesión', 'error');
         }
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error:', error);
         showMessage('Error al conectar con el servidor', 'error');
-      });
+      }
     });
   }
   
