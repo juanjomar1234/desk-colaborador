@@ -439,6 +439,75 @@ git branch -M main
 git push -u origin main
 ```
 
+### 6.6 Configuración de Secretos para GitHub Actions
+
+1. Acceder a la configuración de secretos:
+   - Ir al repositorio en GitHub
+   - Click en "Settings"
+   - En el menú lateral, click en "Secrets and variables" > "Actions"
+   - Click en "New repository secret"
+
+2. Configurar los siguientes secretos:
+   - `DOCKER_USERNAME`: Usuario de Docker Hub
+   - `DOCKER_PASSWORD`: Token de acceso de Docker Hub
+   - `SSH_PRIVATE_KEY`: Clave SSH privada para el servidor
+   - `SSH_HOST`: Dirección IP o dominio del servidor
+   - `SSH_USER`: Usuario SSH del servidor
+   - `SSH_PORT`: 65002
+   - `DEPLOY_PATH`: /var/www/desk-colaborador
+
+3. Verificar secretos:
+   - En la lista de secretos deben aparecer los 7 secretos configurados
+   - Los valores no serán visibles por seguridad
+   - Cada secreto mostrará la fecha de última actualización
+
+### 6.7 Configuración de GitHub Actions Workflow
+
+1. Crear directorio y archivo de workflow:
+```bash
+mkdir -p .github/workflows
+touch .github/workflows/deploy.yml
+```
+
+2. Contenido del archivo deploy.yml:
+```yaml
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker images
+        run: |
+          docker-compose -f docker-compose.prod.yml build
+          docker-compose -f docker-compose.prod.yml push
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            git pull origin main
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d
+```
+
 ## 7. Pruebas
 
 ### 7.1 Pruebas Unitarias
