@@ -28,10 +28,19 @@ try:
     from frontend_service.middleware.auth import require_auth
 
     app = create_app()
+
+    # Imprimir información de depuración
+    print("Content-Type: text/html\n")
+    print("<pre>")
+    print("Debug Info:")
+    print(f"Current Directory: {current_dir}")
+    print(f"Python Path: {sys.path}")
+    print(f"Environment: {dict(os.environ)}")
+    print("</pre>")
+
     app.before_request(require_auth)
 
     if __name__ == "__main__":
-        print("Content-Type: text/html\n")
         from wsgiref.handlers import CGIHandler
         CGIHandler().run(app)
 
