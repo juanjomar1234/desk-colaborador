@@ -1,7 +1,27 @@
 #!/usr/bin/env python3
+import sys
+import os
 
-from frontend_service.app import app
+print("Content-Type: text/html\n")
+print("""
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Info</title>
+</head>
+<body>
+    <h1>Python Debug Info</h1>
+    <pre>
+""")
 
-if __name__ == "__main__":
-    print("Content-Type: text/html\n")  # Necesario para CGI
-    app.run(host='0.0.0.0', port=5000) 
+print("Python Version:", sys.version)
+print("\nPython Path:", sys.path)
+print("\nEnvironment Variables:")
+for key, value in os.environ.items():
+    print(f"{key}: {value}")
+
+print("""
+    </pre>
+</body>
+</html>
+""") 
