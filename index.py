@@ -31,7 +31,7 @@ try:
     @app.route('/')
     def index():
         if 'token' not in session:
-            return redirect('/auth/login')
+            return redirect('https://portalcolaborador.uno14.trading/auth/login')
         return "Logged in!"
 
     if __name__ == "__main__":

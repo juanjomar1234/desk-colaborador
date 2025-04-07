@@ -1,9 +1,9 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template, session, redirect, url_for
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..models.user import User
 from .. import db
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -27,27 +27,21 @@ def register():
     
     return jsonify({'message': 'Usuario registrado exitosamente'}), 201
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    data = request.get_json()
-    
-    # Buscar usuario
-    user = User.query.filter_by(username=data['username']).first()
-    
-    # Verificar credenciales
-    if user and user.check_password(data['password']):
-        # Crear token JWT
-        access_token = create_access_token(identity={
-            'id': user.id,
-            'username': user.username,
-            'role': user.role
-        })
-        return jsonify({
-            'message': 'Inicio de sesión exitoso',
-            'access_token': access_token
-        }), 200
-    
-    return jsonify({'message': 'Credenciales inválidas'}), 401
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        # Aquí iría la lógica de autenticación
+        pass
+
+@auth_bp.route('/verify', methods=['GET'])
+def verify():
+    token = request.headers.get('Authorization')
+    if token and token.startswith('Bearer '):
+        # Aquí iría la verificación del token
+        return jsonify({'valid': True})
+    return jsonify({'valid': False}), 401
 
 @auth_bp.route('/user', methods=['GET'])
 @jwt_required()
