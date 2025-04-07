@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -18,7 +18,8 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         JWT_SECRET_KEY='jwt-secret-key',  # Clave para JWT
         JWT_ACCESS_TOKEN_EXPIRES=False,  # No expirar tokens en pruebas
-        JWT_ERROR_MESSAGE_KEY='message'  # Clave para mensajes de error
+        JWT_ERROR_MESSAGE_KEY='message',  # Clave para mensajes de error
+        DEBUG=True  # Habilitar modo debug
     )
 
     if test_config is not None:
@@ -41,6 +42,21 @@ def create_app(test_config=None):
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(auth_view_bp)
+
+    @app.route('/')
+    def index():
+        """Página de inicio del servicio de autenticación"""
+        return jsonify({
+            'service': 'Auth Service',
+            'version': '1.0',
+            'endpoints': {
+                'login': '/auth/login',
+                'register': '/auth/register',
+                'verify': '/auth/verify',
+                'user': '/auth/user',
+                'check-auth': '/auth/check-auth'
+            }
+        })
 
     # Crear tablas y datos iniciales
     with app.app_context():
