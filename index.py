@@ -12,15 +12,17 @@ logging.basicConfig(
 )
 
 try:
-    # Añadir el directorio actual al path de Python
-    sys.path.insert(0, os.path.dirname(__file__))
+    # Añadir los directorios necesarios al path de Python
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, current_dir)
+    sys.path.insert(0, os.path.join(current_dir, 'frontend-service'))
     logging.info(f"Python path: {sys.path}")
 
     # Configurar variables de entorno para Flask
-    os.environ['FLASK_APP'] = 'frontend_service.app'
+    os.environ['FLASK_APP'] = 'app'
     os.environ['FLASK_ENV'] = 'production'
 
-    from frontend_service.app import app
+    from app import app
     from wsgiref.handlers import CGIHandler
 
     if __name__ == "__main__":

@@ -26,3 +26,5 @@ def create_app(test_config=None):
     app.register_blueprint(frontend_bp)
 
     return app
+
+# Este archivo vacío marca el directorio como un paquete Python
