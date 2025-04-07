@@ -12,11 +12,11 @@ def index():
         'service': 'Auth Service',
         'version': '1.0',
         'endpoints': {
-            'login': '/auth/login',
-            'register': '/auth/register',
-            'verify': '/auth/verify',
-            'user': '/auth/user',
-            'check-auth': '/auth/check-auth'
+            'login': '/login',
+            'register': '/register',
+            'verify': '/verify',
+            'user': '/user',
+            'check-auth': '/check-auth'
         }
     })
 
@@ -44,37 +44,47 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    import pdb; pdb.set_trace()  # Debug point
     if request.method == 'GET':
         return render_template('login.html')
     
-    data = request.get_json()
-    if not data:
-        return jsonify({'message': 'No se recibieron datos'}), 400
+    try:
+        data = request.get_json()
+        if not data:
+            print("No se recibieron datos")  # Log para debug
+            return jsonify({'message': 'No se recibieron datos'}), 400
+            
+        username = data.get('username')
+        password = data.get('password')
         
-    username = data.get('username')
-    password = data.get('password')
-    
-    if not username or not password:
-        return jsonify({'message': 'Faltan campos requeridos'}), 400
-    
-    # Para pruebas, aceptar credenciales de test
-    if username == 'test' and password == 'test':
-        access_token = create_access_token(identity='test')
-        return jsonify({
-            'message': 'Login successful',
-            'access_token': access_token
-        }), 200
+        print(f"Intento de login: {username}")  # Log para debug
         
-    # Buscar usuario real
-    user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        access_token = create_access_token(identity=user.username)
-        return jsonify({
-            'message': 'Login successful',
-            'access_token': access_token
-        }), 200
-    
-    return jsonify({'message': 'Credenciales inválidas'}), 401
+        if not username or not password:
+            print("Faltan campos requeridos")  # Log para debug
+            return jsonify({'message': 'Faltan campos requeridos'}), 400
+        
+        # Para pruebas, aceptar credenciales de test
+        if username == 'test' and password == 'test':
+            access_token = create_access_token(identity='test')
+            return jsonify({
+                'message': 'Login successful',
+                'access_token': access_token
+            }), 200
+            
+        # Buscar usuario real
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            access_token = create_access_token(identity=user.username)
+            return jsonify({
+                'message': 'Login successful',
+                'access_token': access_token
+            }), 200
+        
+        print("Credenciales inválidas")  # Log para debug
+        return jsonify({'message': 'Credenciales inválidas'}), 401
+    except Exception as e:
+        print(f"Error en login: {str(e)}")  # Log para debug
+        return jsonify({'message': f'Error del servidor: {str(e)}'}), 500
 
 @auth_bp.route('/verify', methods=['GET'])
 def verify():
