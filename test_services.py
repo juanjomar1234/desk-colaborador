@@ -46,11 +46,13 @@ class TestAuthService(unittest.TestCase):
         login_response = self.client.post('/auth/login',
             json={'username': 'test', 'password': 'test'})
         
-        if login_response.status_code == 200:
-            token = login_response.json.get("access_token")
-            response = self.client.get('/auth/user',
-                headers={"Authorization": f"Bearer {token}"})
-            self.assertEqual(response.status_code, 200)
+        self.assertEqual(login_response.status_code, 200)
+        token = login_response.json.get("access_token")
+        self.assertIsNotNone(token)
+        
+        response = self.client.get('/auth/user',
+            headers={"Authorization": f"Bearer {token}"})
+        self.assertEqual(response.status_code, 200)
 
 class TestFrontendService(unittest.TestCase):
     """Pruebas unitarias para el servicio frontend"""
