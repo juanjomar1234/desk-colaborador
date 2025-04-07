@@ -1,6 +1,9 @@
 import unittest
 import json
 from unittest.mock import patch
+import warnings
+
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class TestAuthService(unittest.TestCase):
     """Pruebas unitarias para el servicio de autenticación"""
