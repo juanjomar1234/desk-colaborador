@@ -40,4 +40,8 @@ app.log
 # Local environment
 .env
 .env.local
-get-pip.py 
+get-pip.py
+
+# SQLite
+*.sqlite
+*.pyc 

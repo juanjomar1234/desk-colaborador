@@ -17,7 +17,7 @@ def create_app(test_config=None):
     # Configuración por defecto
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
+        SQLALCHEMY_DATABASE_URI='sqlite:///auth.sqlite',
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         JWT_SECRET_KEY='jwt-secret-key',  # Clave para JWT
         JWT_ACCESS_TOKEN_EXPIRES=False,  # No expirar tokens en pruebas
