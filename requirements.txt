@@ -1,0 +1,2 @@
+flask==2.0.3  # Última versión compatible con Python 3.6
+werkzeug==2.0.3 

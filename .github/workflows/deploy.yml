@@ -23,7 +23,7 @@ jobs:
           strip_components: 0
           overwrite: true
 
-      - name: Set permissions
+      - name: Set permissions and install dependencies
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -35,3 +35,5 @@ jobs:
             find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
             chmod +x ${{ secrets.DEPLOY_PATH }}/index.py
             chmod +x ${{ secrets.DEPLOY_PATH }}/frontend-service/app.py
+            cd ${{ secrets.DEPLOY_PATH }}
+            python3 -m pip install --user -r requirements.txt
