@@ -24,23 +24,18 @@ try:
     os.environ['FLASK_ENV'] = 'production'
     os.environ['AUTH_SERVICE_URL'] = 'https://portalcolaborador.uno14.trading/auth'
 
-    from frontend_service import create_app
-    from frontend_service.middleware.auth import require_auth
+    from flask import Flask, session, redirect
+    app = Flask(__name__)
+    app.secret_key = 'your-secret-key-here'  # Necesario para session
 
-    app = create_app()
-
-    # Imprimir información de depuración
-    print("Content-Type: text/html\n")
-    print("<pre>")
-    print("Debug Info:")
-    print(f"Current Directory: {current_dir}")
-    print(f"Python Path: {sys.path}")
-    print(f"Environment: {dict(os.environ)}")
-    print("</pre>")
-
-    app.before_request(require_auth)
+    @app.route('/')
+    def index():
+        if 'token' not in session:
+            return redirect('/auth/login')
+        return "Logged in!"
 
     if __name__ == "__main__":
+        print("Content-Type: text/html\n")
         from wsgiref.handlers import CGIHandler
         CGIHandler().run(app)
 
