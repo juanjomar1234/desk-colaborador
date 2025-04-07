@@ -2,19 +2,31 @@
 
 echo "=== Iniciando despliegue de la aplicación de microservicios ==="
 
-# Activar entorno virtual en producción
-source /path/to/venv/bin/activate
+# Configurar rutas para hosting compartido
+DEPLOY_PATH="/home/u396608776/domains/uno14.trading/public_html/portalcolaborador"
+VENV_PATH="$DEPLOY_PATH/venv"
+
+# Activar entorno virtual
+source $VENV_PATH/bin/activate
 
 # Instalar/actualizar dependencias
 pip install -r requirements.txt
 
+# Asegurar permisos correctos
+chmod 755 $DEPLOY_PATH
+find $DEPLOY_PATH -type d -exec chmod 755 {} \;
+find $DEPLOY_PATH -type f -exec chmod 644 {} \;
+chmod 755 $DEPLOY_PATH/wsgi.py
+chmod 755 $DEPLOY_PATH/frontend_service/wsgi.py
+chmod 755 $DEPLOY_PATH/auth_service/wsgi.py
+
 # Reiniciar servicios con gunicorn
 echo "Deteniendo servicios anteriores..."
-pkill -f gunicorn || true  # No fallar si no hay procesos
+pkill -f gunicorn || true
 
 echo "Iniciando servicios..."
-gunicorn auth_service.wsgi:app -b 0.0.0.0:8000 -D
-gunicorn frontend_service.wsgi:app -b 0.0.0.0:8001 -D
+$VENV_PATH/bin/gunicorn auth_service.wsgi:app -b 127.0.0.1:8000 -D --pid $DEPLOY_PATH/auth.pid
+$VENV_PATH/bin/gunicorn frontend_service.wsgi:app -b 127.0.0.1:8001 -D --pid $DEPLOY_PATH/frontend.pid
 
 # Verificar que los servicios estén funcionando
 echo "Verificando servicios..."
