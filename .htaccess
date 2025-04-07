@@ -4,15 +4,26 @@ RewriteEngine On
 # Asegurarse que el directorio base es correcto
 RewriteBase /portalcolaborador/
 
-# Permitir ejecución de Python
-Options +ExecCGI
-AddHandler cgi-script .py
+# Permitir ejecución de Python y CGI
+Options +ExecCGI +FollowSymLinks
+AddHandler cgi-script .py .cgi
+
+# Configuración de Python
+SetEnv PYTHONPATH /home/u396608776/domains/uno14.trading/public_html/portalcolaborador
+SetEnv FLASK_APP frontend_service
+SetEnv FLASK_ENV production
 
 # Asegurar que index.py es ejecutable
 <Files "index.py">
     Options +ExecCGI
     SetHandler cgi-script
+    Require all granted
 </Files>
+
+# Permitir acceso a archivos estáticos
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico)$">
+    Require all granted
+</FilesMatch>
 
 # Redirigir todas las peticiones a index.py
 RewriteCond %{REQUEST_FILENAME} !-f

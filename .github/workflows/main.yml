@@ -71,14 +71,24 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          chmod 755 ${{ secrets.DEPLOY_PATH }}
+          # Asegurar permisos de directorios
           find ${{ secrets.DEPLOY_PATH }} -type d -exec chmod 755 {} \;
+          
+          # Asegurar permisos de archivos
           find ${{ secrets.DEPLOY_PATH }} -type f -exec chmod 644 {} \;
+          
+          # Permisos especiales para ejecutables
+          chmod 755 ${{ secrets.DEPLOY_PATH }}/index.py
           chmod 755 ${{ secrets.DEPLOY_PATH }}/deploy.sh
           chmod 755 ${{ secrets.DEPLOY_PATH }}/wsgi.py
-          chmod 755 ${{ secrets.DEPLOY_PATH }}/index.py
           chmod 755 ${{ secrets.DEPLOY_PATH }}/frontend_service/wsgi.py
           chmod 755 ${{ secrets.DEPLOY_PATH }}/auth_service/wsgi.py
+          
+          # Permisos para directorios de cache y logs
+          mkdir -p ${{ secrets.DEPLOY_PATH }}/logs
+          mkdir -p ${{ secrets.DEPLOY_PATH }}/cache
+          chmod -R 777 ${{ secrets.DEPLOY_PATH }}/logs
+          chmod -R 777 ${{ secrets.DEPLOY_PATH }}/cache
 
     - name: Execute deploy script
       uses: appleboy/ssh-action@master
