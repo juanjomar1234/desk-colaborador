@@ -1,20 +1,39 @@
+# Habilitar mod_rewrite
+RewriteEngine On
+
+# Asegurarse que el directorio base es correcto
+RewriteBase /portalcolaborador/
+
+# Permitir ejecución de Python
 Options +ExecCGI
 AddHandler cgi-script .py
-DirectoryIndex index.py
 
+# Asegurar que index.py es ejecutable
 <Files "index.py">
     Options +ExecCGI
     SetHandler cgi-script
 </Files>
 
+# Redirigir todas las peticiones a index.py
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.py/$1 [QSA,L]
+
+# Configuración de seguridad
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevenir listado de directorios
+Options -Indexes
+
+# Configuración de CORS
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET,POST,OPTIONS,DELETE,PUT"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+
 # Favicon
 <Files "favicon.ico">
     ForceType image/x-icon
-</Files>
-
-# Redirigir todas las solicitudes a index.py
-RewriteEngine On
-RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.py [QSA,L] 
+</Files> 
