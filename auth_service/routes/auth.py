@@ -72,17 +72,14 @@ def verify():
 @auth_bp.route('/user', methods=['GET'])
 @jwt_required()
 def get_user():
-    # Obtener la identidad del token JWT
-    current_user = get_jwt_identity()
-    if not current_user:
-        return jsonify({'message': 'Token inválido'}), 401
-        
-    # Devolver la información del usuario
-    return jsonify({
-        'id': current_user.get('id'),
-        'username': current_user.get('username'),
-        'role': current_user.get('role')
-    }), 200
+    try:
+        current_user = get_jwt_identity()
+        if not current_user:
+            return jsonify({'message': 'Token inválido'}), 401
+            
+        return jsonify(current_user), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 401
 
 @auth_bp.route('/check-auth', methods=['GET'])
 @jwt_required()

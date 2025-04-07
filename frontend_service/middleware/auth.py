@@ -1,7 +1,8 @@
 from functools import wraps
-from flask import request, redirect, session, current_app
+from flask import request, redirect, session, current_app, jsonify
 import requests
 import os
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
 def require_auth(f=None):
     if f is None:
@@ -35,4 +36,14 @@ def require_auth(f=None):
             return redirect('/auth/login')
 
         return f(*args, **kwargs)
-    return decorated_function 
+    return decorated_function
+
+def jwt_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            verify_jwt_in_request()
+            return fn(*args, **kwargs)
+        except Exception as e:
+            return jsonify({'message': str(e)}), 401
+    return wrapper 
