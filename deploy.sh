@@ -47,11 +47,7 @@ source /path/to/venv/bin/activate
 # Instalar/actualizar dependencias
 pip install -r requirements.txt
 
-# Reiniciar servicios
-sudo systemctl restart auth_service
-sudo systemctl restart frontend_service
-
-# O si usamos gunicorn directamente:
-pkill -f gunicorn
+# Reiniciar servicios con gunicorn
+pkill -f gunicorn || true  # No fallar si no hay procesos
 gunicorn auth_service.wsgi:app -b 0.0.0.0:8000 -D
 gunicorn frontend_service.wsgi:app -b 0.0.0.0:8001 -D

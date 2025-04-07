@@ -57,7 +57,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "auth_service/**,frontend_service/**,static/**,lib/**,*.py,*.md,*.yml,.htaccess"
+        source: "auth_service/**,frontend_service/**,static/**,lib/**,*.py,*.md,*.yml,.htaccess,deploy.sh"
         target: "${{ secrets.DEPLOY_PATH }}"
         rm: true
         strip_components: 0
