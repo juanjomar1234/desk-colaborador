@@ -55,12 +55,14 @@ def create_app(test_config=None):
     from .routes.permission import permission_bp
     from .routes.views import auth_view_bp
     from .routes.api import api_bp
+    from .routes.application import application_bp
 
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(auth_view_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(application_bp)
 
     @app.route('/')
     def index():
@@ -78,7 +80,8 @@ def create_app(test_config=None):
                 'me': '/api/me',
                 'users': '/api/users/',
                 'roles': '/api/roles/',
-                'permissions': '/api/permissions/'
+                'permissions': '/api/permissions/',
+                'apps': '/api/apps/'
             }
         })
 
@@ -89,6 +92,8 @@ def create_app(test_config=None):
         # Importar modelos aquí para evitar circular imports
         from .models.role import Role, Permission
         from .models.user import User
+        from .models.application import Application
+        from .data import DEFAULT_APPS
         
         # Crear permisos y roles por defecto si no existen
         with db.session.no_autoflush:
@@ -111,6 +116,10 @@ def create_app(test_config=None):
                 user_role.permissions = [Permission.query.filter_by(name='read_users').first()]
                 
                 db.session.add_all([admin_role, user_role])
+                db.session.commit()
+
+            if Application.query.count() == 0:
+                db.session.add_all([Application(**item) for item in DEFAULT_APPS])
                 db.session.commit()
 
     return app

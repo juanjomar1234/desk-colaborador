@@ -79,8 +79,10 @@ Autenticación: `Authorization: Bearer <access_token>` (obtenido con `POST /logi
 | GET/PUT/DELETE | `/api/users/`, `/api/users/<id>` | JWT (admin o propio usuario) | Gestión de usuarios |
 | GET/POST/PUT/DELETE | `/api/roles/`, `/api/roles/<id>` | JWT (admin) | Gestión de roles |
 | GET/POST/PUT/DELETE | `/api/permissions/`, `/api/permissions/<id>` | JWT (admin) | Gestión de permisos |
+| GET | `/api/apps/`, `/api/apps/<id>` | JWT | Catálogo de aplicaciones habilitadas (admin: `?all=true` incluye deshabilitadas) |
+| POST/PUT/DELETE | `/api/apps/`, `/api/apps/<id>` | JWT (admin) | Gestión del catálogo (`name`, `icon`, `description`, `url`, `enabled`) |
 
-Pruebas de la API: `python -m pytest test_api.py -v`
+Pruebas de la API: `python -m pytest test_api.py test_apps_api.py -v`
 
 ## Pruebas
 
