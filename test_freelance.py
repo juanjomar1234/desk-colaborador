@@ -156,3 +156,48 @@ def test_seed_demo_command(app):
     with app.app_context():
         from freelance_service.models import Proposal
         assert Proposal.query.count() == 4
+
+
+@pytest.mark.parametrize('value', ['nan', 'inf', '-inf'])
+def test_non_finite_amounts_rejected(client, value):
+    assert client.post('/api/projects', json={**PROJECT, 'budget_max': value}).status_code == 400
+    pid = make_project(client)['id']
+    res = client.post(f'/api/projects/{pid}/proposals', json=proposal(amount=value))
+    assert res.status_code == 400
+
+
+def test_portfolio_url_must_be_http(client):
+    pid = make_project(client)['id']
+    res = client.post(f'/api/projects/{pid}/proposals',
+                      json=proposal(portfolio_url='javascript:alert(1)'))
+    assert res.status_code == 400
+    res = client.post(f'/api/projects/{pid}/proposals',
+                      json=proposal(portfolio_url='https://example.com/ana'))
+    assert res.status_code == 201
+
+
+def test_existing_profile_not_overwritten(client):
+    first = make_project(client)['id']
+    second = make_project(client, title='Otro')['id']
+    client.post(f'/api/projects/{first}/proposals', json=proposal())
+    res = client.post(f'/api/projects/{second}/proposals',
+                      json=proposal(name='Impostor', skills='hacking'))
+    assert res.status_code == 201
+    freelancer = client.get('/api/freelancers').get_json()[0]
+    assert freelancer['name'] == 'Ana' and freelancer['skills'] == ['python', 'flask']
+
+
+def test_cannot_close_hired_project(client):
+    pid = make_project(client)['id']
+    prop = client.post(f'/api/projects/{pid}/proposals', json=proposal()).get_json()
+    client.post(f"/api/proposals/{prop['id']}/hire")
+    assert client.post(f'/api/projects/{pid}/close').status_code == 409
+    assert client.get('/api/contracts').get_json()[0]['status'] == 'activo'
+
+
+def test_hire_confirm_does_not_embed_user_data(client):
+    pid = make_project(client)['id']
+    client.post(f'/api/projects/{pid}/proposals', json=proposal(name="x');alert(1);//"))
+    page = client.get(f'/projects/{pid}').get_data(as_text=True)
+    assert 'alert(1)' not in page.split('onsubmit')[-1].split('>')[0]
+    assert "confirm('¿Contratar esta propuesta?" in page

@@ -17,7 +17,7 @@ email/hojas sueltas, sin trazabilidad ni criterio homogéneo.
 
 **Supuestos del MVP:**
 - Un proyecto se adjudica a **un único** freelance.
-- El freelance se identifica por email (sin login); si repite email, se actualiza su ficha.
+- El freelance se identifica por email (sin login); la ficha se crea con la primera propuesta y no se sobrescribe desde el formulario público (no hay verificación de email).
 - Moneda única: EUR. Sin pagos online ni firma electrónica (fuera de alcance).
 - El acceso al panel lo protege la capa de despliegue (staging tras login de la organización);
   la integración con `auth_service` (JWT) queda para la siguiente iteración.
@@ -39,7 +39,7 @@ email/hojas sueltas, sin trazabilidad ni criterio homogéneo.
    el proyecto a `contratado` y se crea un **contrato** `activo` con importe y fecha de inicio.
    No se puede contratar una propuesta rechazada ni un proyecto ya adjudicado/cerrado.
 6. **Seguimiento.** Listado de contratos; al marcarlo `finalizado`, el proyecto pasa a `cerrado`.
-7. **Cerrar sin contratar.** Cierra el proyecto y rechaza las propuestas abiertas.
+7. **Cerrar sin contratar.** Solo proyectos `abiertos`: cierra el proyecto y rechaza las propuestas abiertas.
 8. **KPIs.** Proyectos abiertos, propuestas, pendientes, contratos activos y presupuesto comprometido.
 
 ## 3. Modelo de datos
