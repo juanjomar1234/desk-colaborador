@@ -62,6 +62,24 @@ class TestAuthApi(unittest.TestCase):
         response = self.client.get('/api/me', headers=self._auth('test', 'test'))
         self.assertEqual(response.status_code, 404)
 
+    def test_test_login_does_not_inherit_real_test_account(self):
+        self._register('test', 'other-password', role='admin')
+        headers = self._auth('test', 'test')
+        self.assertEqual(self.client.get('/api/me', headers=headers).status_code, 404)
+        self.assertEqual(self.client.get('/api/users/', headers=headers).status_code, 403)
+
+    def test_reused_username_does_not_transfer_access(self):
+        alice_headers = self._auth('alice', 'alice123')
+        alice_id = self.client.get('/api/me', headers=alice_headers).json['id']
+        admin_headers = self._auth('admin', 'admin123')
+        response = self.client.put(
+            f'/api/users/{alice_id}', headers=admin_headers,
+            json={'username': 'alice_old', 'email': 'alice_old@example.com'})
+        self.assertEqual(response.status_code, 200)
+        self._register('alice', 'new-alice-pass', role='admin')
+        self.assertEqual(self.client.get('/api/me', headers=alice_headers).status_code, 404)
+        self.assertEqual(self.client.get('/api/users/', headers=alice_headers).status_code, 403)
+
     def test_admin_lists_users(self):
         response = self.client.get('/api/users/', headers=self._auth('admin', 'admin123'))
         self.assertEqual(response.status_code, 200)
