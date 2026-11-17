@@ -32,7 +32,7 @@ def register():
     new_user = User(
         username=data['username'],
         email=data['email'],
-        role=data.get('role', 'user')
+        role='user'
     )
     new_user.set_password(data['password'])
     
@@ -73,7 +73,7 @@ def login():
         # Buscar usuario real
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            access_token = create_access_token(identity=user.username)
+            access_token = create_access_token(identity=user.username, additional_claims={'uid': user.id})
             return jsonify({
                 'message': 'Login successful',
                 'access_token': access_token

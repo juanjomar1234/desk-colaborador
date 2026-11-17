@@ -44,6 +44,22 @@ La aplicación está compuesta por dos microservicios:
    - Sistema de tarjetas para aplicaciones
    - Integración con el servicio de autenticación
 
+## API: alta de usuarios (admin)
+
+`POST /api/users/` (Auth Service) crea un usuario. Requiere token JWT de un usuario con rol `admin`.
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:5000/login -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"admin123"}' | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
+curl -s -X POST http://localhost:5000/api/users/ -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"ana","email":"ana@example.com","password":"secreto","role":"user"}'
+```
+
+- Cuerpo: `username`, `email`, `password` (obligatorios) y `role` (opcional, por defecto `user`; debe existir).
+- Respuestas: `201` creado, `400` datos inválidos, `401` sin token, `403` no admin, `409` usuario o email duplicado.
+- `/register` ya no permite autoasignarse un rol: siempre crea usuarios con rol `user`.
+
 ## Mantenimiento
 
 ### Ver logs de los servicios
