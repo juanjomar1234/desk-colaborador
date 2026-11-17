@@ -1,5 +1,7 @@
 """Reglas de negocio compartidas por la API JSON y las vistas HTML."""
+import math
 from datetime import date
+from urllib.parse import urlparse
 
 from .models import (Contract, Freelancer, Project, Proposal, db, parse_skills)
 
@@ -31,6 +33,16 @@ def _number(data, key, required=True, cast=float, minimum=0):
         raise ServiceError(f'El campo "{key}" debe ser numérico')
     if value < minimum:
         raise ServiceError(f'El campo "{key}" debe ser >= {minimum}')
+    return value
+
+
+def _url(data, key):
+    value = _text(data, key, required=False, max_len=500)
+    if not value:
+        return None
+    parsed = urlparse(value)
+    if parsed.scheme not in ('http', 'https') or not parsed.netloc:
+        raise ServiceError(f'El campo "{key}" debe ser una URL http(s)')
     return value
 
 
@@ -97,7 +109,7 @@ def submit_proposal(project, data):
     freelancer.name = _text(data, 'name', max_len=200)
     freelancer.skills = ','.join(parse_skills(data.get('skills')))
     freelancer.hourly_rate = _number(data, 'hourly_rate', required=False)
-    freelancer.portfolio_url = _text(data, 'portfolio_url', required=False, max_len=500) or None
+    freelancer.portfolio_url = _url(data, 'portfolio_url')
     db.session.flush()
 
     if Proposal.query.filter_by(project_id=project.id, freelancer_id=freelancer.id).first():
