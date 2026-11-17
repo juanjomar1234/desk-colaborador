@@ -73,12 +73,7 @@ def create_app(test_config=None):
                 'register': '/register',
                 'verify': '/verify',
                 'user': '/user',
-                'check-auth': '/check-auth',
-                'health': '/api/health',
-                'me': '/api/me',
-                'users': '/api/users/',
-                'roles': '/api/roles/',
-                'permissions': '/api/permissions/'
+                'check-auth': '/check-auth'
             }
         })
 

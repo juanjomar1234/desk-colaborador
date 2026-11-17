@@ -16,7 +16,12 @@ def index():
             'register': '/register',
             'verify': '/verify',
             'user': '/user',
-            'check-auth': '/check-auth'
+            'check-auth': '/check-auth',
+            'health': '/api/health',
+            'me': '/api/me',
+            'users': '/api/users/',
+            'roles': '/api/roles/',
+            'permissions': '/api/permissions/'
         }
     })
 

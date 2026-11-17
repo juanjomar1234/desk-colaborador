@@ -44,6 +44,11 @@ class TestAuthApi(unittest.TestCase):
         self.assertEqual(response.json['status'], 'ok')
         self.assertEqual(response.json['database'], 'ok')
 
+    def test_index_lists_api_endpoints(self):
+        endpoints = self.client.get('/').json['endpoints']
+        self.assertEqual(endpoints['health'], '/api/health')
+        self.assertEqual(endpoints['me'], '/api/me')
+
     def test_me_requires_token(self):
         self.assertEqual(self.client.get('/api/me').status_code, 401)
 
