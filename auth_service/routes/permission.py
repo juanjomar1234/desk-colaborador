@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
+from .helpers import get_current_user
 from ..models.role import Permission
 from .. import db
 
@@ -9,7 +10,7 @@ permission_bp = Blueprint('permission', __name__, url_prefix='/api/permissions')
 @jwt_required()
 def get_permissions():
     # Verificar si el usuario tiene rol de administrador
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -23,7 +24,7 @@ def get_permissions():
 @jwt_required()
 def create_permission():
     # Verificar si el usuario tiene rol de administrador
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -51,7 +52,7 @@ def create_permission():
 @jwt_required()
 def get_permission(permission_id):
     # Verificar si el usuario tiene rol de administrador
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -66,7 +67,7 @@ def get_permission(permission_id):
 @jwt_required()
 def update_permission(permission_id):
     # Verificar si el usuario tiene rol de administrador
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -94,7 +95,7 @@ def update_permission(permission_id):
 @jwt_required()
 def delete_permission(permission_id):
     # Verificar si el usuario tiene rol de administrador
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     

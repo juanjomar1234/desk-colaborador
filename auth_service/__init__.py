@@ -39,7 +39,7 @@ def create_app(test_config=None):
     CORS(app, resources={
         r"/*": {
             "origins": ["http://localhost:8001", "http://web:8001"],
-            "methods": ["GET", "POST", "OPTIONS"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
         }
     })
@@ -54,11 +54,13 @@ def create_app(test_config=None):
     from .routes.role import role_bp
     from .routes.permission import permission_bp
     from .routes.views import auth_view_bp
-    
+    from .routes.api import api_bp
+
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(auth_view_bp)
+    app.register_blueprint(api_bp)
 
     @app.route('/')
     def index():
@@ -71,7 +73,12 @@ def create_app(test_config=None):
                 'register': '/register',
                 'verify': '/verify',
                 'user': '/user',
-                'check-auth': '/check-auth'
+                'check-auth': '/check-auth',
+                'health': '/api/health',
+                'me': '/api/me',
+                'users': '/api/users/',
+                'roles': '/api/roles/',
+                'permissions': '/api/permissions/'
             }
         })
 
