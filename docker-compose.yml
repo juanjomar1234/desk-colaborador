@@ -26,3 +26,18 @@ services:
       - ./frontend_service:/app/frontend_service
     depends_on:
       - auth
+
+  freelance:
+    build: .
+    command: gunicorn freelance_service.wsgi:app -b 0.0.0.0:8002
+    ports:
+      - "8002:8002"
+    environment:
+      - FREELANCE_DATABASE_URL=sqlite:////data/freelance.db
+      - FREELANCE_SEED_DEMO=1
+    volumes:
+      - ./freelance_service:/app/freelance_service
+      - freelance-data:/data
+
+volumes:
+  freelance-data:

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Enviar propuesta{% endblock %}
+{% block content %}
+<h1>Enviar propuesta: {{ project.title }}</h1>
+<section class="card">
+  <p class="pre">{{ project.description }}</p>
+  <p>Habilidades: {% for s in project.skill_list %}<span class="tag">{{ s }}</span>{% else %}—{% endfor %}
+     · Presupuesto máx.: <span class="num">{{ '%.0f'|format(project.budget_max) }} €</span>
+     {% if project.deadline %}· Fecha límite: <span class="num">{{ project.deadline }}</span>{% endif %}</p>
+</section>
+{% if project.status != 'abierto' %}
+  <p class="empty">Este proyecto ya no acepta propuestas.</p>
+{% else %}
+<form method="post" class="card form">
+  <div class="row">
+    <label>Nombre<input name="name" required value="{{ form.name }}"></label>
+    <label>Email<input name="email" type="email" required value="{{ form.email }}"></label>
+  </div>
+  <label>Tus habilidades <small>(separadas por comas)</small><input name="skills" value="{{ form.skills }}"></label>
+  <div class="row">
+    <label>Tarifa (€/h)<input name="hourly_rate" type="number" min="0" step="1" value="{{ form.hourly_rate }}"></label>
+    <label>Portfolio (URL)<input name="portfolio_url" type="url" value="{{ form.portfolio_url }}"></label>
+  </div>
+  <div class="row">
+    <label>Importe total (€)<input name="amount" type="number" min="1" step="1" required value="{{ form.amount }}"></label>
+    <label>Plazo (días)<input name="days" type="number" min="1" step="1" required value="{{ form.days }}"></label>
+  </div>
+  <label>Mensaje / enfoque<textarea name="message" rows="4" required>{{ form.message }}</textarea></label>
+  <div class="actions"><button class="btn btn-primary" type="submit">Enviar propuesta</button></div>
+</form>
+{% endif %}
+{% endblock %}

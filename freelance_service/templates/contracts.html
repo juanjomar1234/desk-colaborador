@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Contratos{% endblock %}
+{% block content %}
+<h1>Contratos</h1>
+{% if contracts %}
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Proyecto</th><th>Freelance</th><th class="r">Importe</th><th class="r">Días</th><th>Inicio</th><th>Estado</th><th></th></tr></thead>
+  <tbody>
+  {% for c in contracts %}
+    <tr>
+      <td><a href="{{ url_for('views.project_detail', project_id=c.project_id) }}">{{ c.project.title }}</a></td>
+      <td>{{ c.proposal.freelancer.name }}<br><small class="muted">{{ c.proposal.freelancer.email }}</small></td>
+      <td class="r num">{{ '%.0f'|format(c.amount) }} €</td>
+      <td class="r num">{{ c.proposal.days }}</td>
+      <td class="num">{{ c.start_date }}</td>
+      <td>{% with value=c.status %}{% include '_status.html' %}{% endwith %}</td>
+      <td>{% if c.status == 'activo' %}
+        <form method="post" action="{{ url_for('views.contract_complete', contract_id=c.id) }}"><button class="btn btn-sm" type="submit">Marcar finalizado</button></form>
+      {% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">Aún no hay contratos. Contrata desde la ficha de un proyecto.</p>
+{% endif %}
+{% endblock %}
