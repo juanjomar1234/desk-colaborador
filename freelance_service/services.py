@@ -31,6 +31,8 @@ def _number(data, key, required=True, cast=float, minimum=0):
         value = cast(raw)
     except (TypeError, ValueError):
         raise ServiceError(f'El campo "{key}" debe ser numérico')
+    if not math.isfinite(value):
+        raise ServiceError(f'El campo "{key}" debe ser un número finito')
     if value < minimum:
         raise ServiceError(f'El campo "{key}" debe ser >= {minimum}')
     return value
