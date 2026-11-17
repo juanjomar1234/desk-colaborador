@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from ..models.user import User
 from ..models.role import Role
 from .. import db
@@ -8,10 +8,15 @@ user_bp = Blueprint('user', __name__, url_prefix='/api/users')
 
 
 def _current_db_user():
-    identity = get_jwt_identity()
-    if not isinstance(identity, str):
+    # Solo los tokens emitidos por un login real llevan `uid`; el login de
+    # pruebas (test/test) no debe heredar los permisos de un usuario de la BD.
+    uid = get_jwt().get('uid')
+    if uid is None:
         return None
-    return User.query.filter_by(username=identity).first()
+    user = db.session.get(User, uid)
+    if not user or user.username != get_jwt_identity():
+        return None
+    return user
 
 
 @user_bp.route('/', methods=['POST'])

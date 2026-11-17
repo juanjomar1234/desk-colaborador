@@ -59,6 +59,18 @@ class TestCreateUserAPI(unittest.TestCase):
                                    'password': 'x'}, headers)
             self.assertEqual(response.status_code, 403)
 
+    def test_test_login_does_not_inherit_admin_named_test(self):
+        from auth_service import db
+        from auth_service.models.user import User
+        with self.app.app_context():
+            admin = User(username='test', email='test@example.com', role='admin')
+            admin.set_password('otra-clave')
+            db.session.add(admin)
+            db.session.commit()
+        response = self._post({'username': 'x', 'email': 'x@example.com',
+                               'password': 'x', 'role': 'admin'}, self._token('test', 'test'))
+        self.assertEqual(response.status_code, 403)
+
     def test_validation_errors(self):
         headers = self._token('admin', 'admin123')
         response = self._post({'username': 'x'}, headers)
