@@ -102,15 +102,18 @@ def submit_proposal(project, data):
     days = _number(data, 'days', cast=int, minimum=1)
     message = _text(data, 'message')
 
+    name = _text(data, 'name', max_len=200)
+    skills = ','.join(parse_skills(data.get('skills')))
+    hourly_rate = _number(data, 'hourly_rate', required=False)
+    portfolio_url = _url(data, 'portfolio_url')
+
+    # Sin verificación de email, una propuesta pública nunca sobrescribe un perfil existente.
     freelancer = Freelancer.query.filter_by(email=email).first()
     if freelancer is None:
-        freelancer = Freelancer(email=email)
+        freelancer = Freelancer(email=email, name=name, skills=skills,
+                                hourly_rate=hourly_rate, portfolio_url=portfolio_url)
         db.session.add(freelancer)
-    freelancer.name = _text(data, 'name', max_len=200)
-    freelancer.skills = ','.join(parse_skills(data.get('skills')))
-    freelancer.hourly_rate = _number(data, 'hourly_rate', required=False)
-    freelancer.portfolio_url = _url(data, 'portfolio_url')
-    db.session.flush()
+        db.session.flush()
 
     if Proposal.query.filter_by(project_id=project.id, freelancer_id=freelancer.id).first():
         db.session.rollback()
