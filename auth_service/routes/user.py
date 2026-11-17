@@ -1,9 +1,60 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models.user import User
+from ..models.role import Role
 from .. import db
 
 user_bp = Blueprint('user', __name__, url_prefix='/api/users')
+
+
+def _current_db_user():
+    identity = get_jwt_identity()
+    if not isinstance(identity, str):
+        return None
+    return User.query.filter_by(username=identity).first()
+
+
+@user_bp.route('/', methods=['POST'])
+@jwt_required()
+def create_user():
+    """Alta de usuarios por un administrador"""
+    current_user = _current_db_user()
+    if not current_user or current_user.role != 'admin':
+        return jsonify({'message': 'No autorizado'}), 403
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'message': 'Se esperaba un cuerpo JSON'}), 400
+
+    fields = {f: data.get(f) for f in ('username', 'email', 'password')}
+    missing = [f for f, v in fields.items() if not isinstance(v, str) or not v.strip()]
+    if missing:
+        return jsonify({'message': 'Faltan campos requeridos', 'fields': missing}), 400
+
+    username = fields['username'].strip()
+    email = fields['email'].strip()
+    if '@' not in email:
+        return jsonify({'message': 'Email no válido'}), 400
+
+    role = data.get('role', 'user')
+    if not isinstance(role, str) or not Role.query.filter_by(name=role).first():
+        return jsonify({'message': 'Rol no válido'}), 400
+
+    if User.query.filter_by(username=username).first():
+        return jsonify({'message': 'El usuario ya existe'}), 409
+    if User.query.filter_by(email=email).first():
+        return jsonify({'message': 'El email ya está registrado'}), 409
+
+    new_user = User(username=username, email=email, role=role)
+    new_user.set_password(fields['password'])
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Usuario creado exitosamente',
+        'user': new_user.to_dict()
+    }), 201
+
 
 @user_bp.route('/', methods=['GET'])
 @jwt_required()
