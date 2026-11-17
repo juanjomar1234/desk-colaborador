@@ -65,7 +65,7 @@
           {% endif %}
           {% if pr.status != 'rechazada' %}
           <form method="post" action="{{ url_for('views.proposal_status', proposal_id=pr.id) }}"><input type="hidden" name="status" value="rechazada"><button class="btn btn-sm" type="submit">Rechazar</button></form>
-          <form method="post" action="{{ url_for('views.proposal_hire', proposal_id=pr.id) }}" onsubmit="return confirm('¿Contratar a {{ pr.freelancer.name }} por {{ '%.0f'|format(pr.amount) }} €?')"><button class="btn btn-sm btn-primary" type="submit">Contratar</button></form>
+          <form method="post" action="{{ url_for('views.proposal_hire', proposal_id=pr.id) }}" onsubmit="return confirm('¿Contratar esta propuesta? El resto se rechazará.')"><button class="btn btn-sm btn-primary" type="submit">Contratar</button></form>
           {% else %}
           <form method="post" action="{{ url_for('views.proposal_status', proposal_id=pr.id) }}"><input type="hidden" name="status" value="pendiente"><button class="btn btn-sm" type="submit">Reabrir</button></form>
           {% endif %}
