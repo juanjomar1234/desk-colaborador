@@ -42,7 +42,10 @@ def _url(data, key):
     value = _text(data, key, required=False, max_len=500)
     if not value:
         return None
-    parsed = urlparse(value)
+    try:
+        parsed = urlparse(value)
+    except ValueError:
+        raise ServiceError(f'El campo "{key}" debe ser una URL http(s)')
     if parsed.scheme not in ('http', 'https') or not parsed.netloc:
         raise ServiceError(f'El campo "{key}" debe ser una URL http(s)')
     return value

@@ -172,6 +172,9 @@ def test_portfolio_url_must_be_http(client):
                       json=proposal(portfolio_url='javascript:alert(1)'))
     assert res.status_code == 400
     res = client.post(f'/api/projects/{pid}/proposals',
+                      json=proposal(portfolio_url='https://[example.com'))
+    assert res.status_code == 400
+    res = client.post(f'/api/projects/{pid}/proposals',
                       json=proposal(portfolio_url='https://example.com/ana'))
     assert res.status_code == 201
 
