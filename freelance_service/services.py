@@ -82,8 +82,9 @@ def create_project(data):
 
 
 def close_project(project):
-    if project.status == 'cerrado':
-        raise ServiceError('El proyecto ya está cerrado', 409)
+    if project.status != 'abierto':
+        raise ServiceError('Solo se pueden cerrar proyectos abiertos; '
+                           'un proyecto contratado se cierra al finalizar su contrato', 409)
     project.status = 'cerrado'
     for p in project.proposals:
         if p.status in ('pendiente', 'preseleccionada'):
