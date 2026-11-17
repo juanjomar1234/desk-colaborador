@@ -24,7 +24,7 @@ jobs:
     
     - name: Run tests
       run: |
-        python -m pytest test_services.py -v
+        python -m pytest test_services.py test_applications.py -v
         
     - name: Check code style
       run: |

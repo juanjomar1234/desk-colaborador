@@ -39,7 +39,7 @@ def create_app(test_config=None):
     CORS(app, resources={
         r"/*": {
             "origins": ["http://localhost:8001", "http://web:8001"],
-            "methods": ["GET", "POST", "OPTIONS"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"]
         }
     })
@@ -54,11 +54,13 @@ def create_app(test_config=None):
     from .routes.role import role_bp
     from .routes.permission import permission_bp
     from .routes.views import auth_view_bp
-    
+    from .routes.application import application_bp
+
     app.register_blueprint(user_bp)
     app.register_blueprint(role_bp)
     app.register_blueprint(permission_bp)
     app.register_blueprint(auth_view_bp)
+    app.register_blueprint(application_bp)
 
     @app.route('/')
     def index():
@@ -71,18 +73,20 @@ def create_app(test_config=None):
                 'register': '/register',
                 'verify': '/verify',
                 'user': '/user',
-                'check-auth': '/check-auth'
+                'check-auth': '/check-auth',
+                'applications': '/api/applications/'
             }
         })
 
     # Crear tablas y datos iniciales
     with app.app_context():
-        db.create_all()
-        
         # Importar modelos aquí para evitar circular imports
         from .models.role import Role, Permission
         from .models.user import User
-        
+        from .models.application import Application
+
+        db.create_all()
+
         # Crear permisos y roles por defecto si no existen
         with db.session.no_autoflush:
             if Permission.query.count() == 0:
@@ -104,6 +108,23 @@ def create_app(test_config=None):
                 user_role.permissions = [Permission.query.filter_by(name='read_users').first()]
                 
                 db.session.add_all([admin_role, user_role])
+                db.session.commit()
+
+            if Application.query.count() == 0:
+                db.session.add_all([
+                    Application(name='Auth Service', icon='lock',
+                                description='Servicio de autenticación, gestión de usuarios, roles y permisos.'),
+                    Application(name='User Management', icon='users',
+                                description='Administración de usuarios y perfiles.'),
+                    Application(name='Reports', icon='chart-bar',
+                                description='Generación y visualización de reportes.'),
+                    Application(name='Settings', icon='cog',
+                                description='Configuración del sistema y preferencias.'),
+                    Application(name='Dashboard', icon='tachometer-alt',
+                                description='Panel de control y estadísticas.'),
+                    Application(name='Notifications', icon='bell',
+                                description='Sistema de notificaciones y alertas.')
+                ])
                 db.session.commit()
 
     return app
