@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Proyectos{% endblock %}
+{% block content %}
+<section class="kpis">
+  <div class="kpi"><span class="kpi-value">{{ stats.open_projects }}</span><span class="kpi-label">Proyectos abiertos</span></div>
+  <div class="kpi"><span class="kpi-value">{{ stats.proposals }}</span><span class="kpi-label">Propuestas recibidas</span></div>
+  <div class="kpi"><span class="kpi-value">{{ stats.pending_proposals }}</span><span class="kpi-label">Pendientes de revisar</span></div>
+  <div class="kpi"><span class="kpi-value">{{ stats.active_contracts }}</span><span class="kpi-label">Contratos activos</span></div>
+  <div class="kpi"><span class="kpi-value num">{{ '%.0f'|format(stats.committed_budget) }} €</span><span class="kpi-label">Presupuesto comprometido</span></div>
+</section>
+
+<div class="section-head">
+  <h1>Proyectos</h1>
+  <form method="get" class="inline">
+    <label for="status" class="sr-only">Estado</label>
+    <select name="status" id="status" onchange="this.form.submit()">
+      <option value="">Todos los estados</option>
+      {% for s in ['abierto', 'contratado', 'cerrado'] %}
+        <option value="{{ s }}" {% if status == s %}selected{% endif %}>{{ s|capitalize }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if projects %}
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Proyecto</th><th>Habilidades</th><th class="r">Presupuesto</th><th>Fecha límite</th><th class="r">Propuestas</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for p in projects %}
+    <tr>
+      <td><a href="{{ url_for('views.project_detail', project_id=p.id) }}">{{ p.title }}</a></td>
+      <td>{% for s in p.skill_list %}<span class="tag">{{ s }}</span>{% endfor %}</td>
+      <td class="r num">{% if p.budget_min %}{{ '%.0f'|format(p.budget_min) }}–{% endif %}{{ '%.0f'|format(p.budget_max) }} €</td>
+      <td class="num">{{ p.deadline or '—' }}</td>
+      <td class="r num">{{ p.proposals|length }}</td>
+      <td>{% with value=p.status %}{% include '_status.html' %}{% endwith %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">No hay proyectos todavía. <a href="{{ url_for('views.project_new') }}">Publica el primero</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block content %}
+<div class="section-head">
+  <h1>{{ project.title }} {% with value=project.status %}{% include '_status.html' %}{% endwith %}</h1>
+  {% if project.status == 'abierto' %}
+  <form method="post" action="{{ url_for('views.project_close', project_id=project.id) }}" onsubmit="return confirm('¿Cerrar el proyecto sin contratar?')">
+    <button class="btn" type="submit">Cerrar sin contratar</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <h2>Descripción</h2>
+    <p class="pre">{{ project.description }}</p>
+    <dl class="meta">
+      <dt>Habilidades</dt><dd>{% for s in project.skill_list %}<span class="tag">{{ s }}</span>{% else %}—{% endfor %}</dd>
+      <dt>Presupuesto</dt><dd class="num">{% if project.budget_min %}{{ '%.0f'|format(project.budget_min) }}–{% endif %}{{ '%.0f'|format(project.budget_max) }} €</dd>
+      <dt>Fecha límite</dt><dd class="num">{{ project.deadline or '—' }}</dd>
+    </dl>
+  </section>
+  <section class="card">
+    {% if project.contract %}
+      <h2>Contratado</h2>
+      <p><strong>{{ project.contract.proposal.freelancer.name }}</strong> · <span class="num">{{ '%.0f'|format(project.contract.amount) }} €</span> · {{ project.contract.proposal.days }} días</p>
+      <p>Inicio: <span class="num">{{ project.contract.start_date }}</span> · {% with value=project.contract.status %}{% include '_status.html' %}{% endwith %}</p>
+      <a href="{{ url_for('views.contracts') }}">Ver contratos</a>
+    {% elif project.status == 'abierto' %}
+      <h2>Enlace para freelancers</h2>
+      <p>Comparte este enlace para recibir propuestas:</p>
+      {% set apply_url = url_for('views.project_apply', project_id=project.id, _external=True) %}
+      <input class="copy" readonly value="{{ apply_url }}" onclick="this.select()">
+      <p><a href="{{ url_for('views.project_apply', project_id=project.id) }}">Abrir formulario de propuesta</a></p>
+    {% else %}
+      <h2>Proyecto cerrado</h2><p>No acepta más propuestas.</p>
+    {% endif %}
+  </section>
+</div>
+
+<h2>Propuestas ({{ proposals|length }})</h2>
+<p class="muted">Ordenadas por encaje de habilidades, ajuste al presupuesto y precio.</p>
+{% if proposals %}
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Freelance</th><th class="r">Encaje</th><th class="r">Importe</th><th class="r">Días</th><th>Mensaje</th><th>Estado</th><th>Acciones</th></tr></thead>
+  <tbody>
+  {% for pr in proposals %}
+    <tr>
+      <td>
+        <strong>{{ pr.freelancer.name }}</strong><br>
+        <small class="muted">{{ pr.freelancer.email }}{% if pr.freelancer.hourly_rate %} · {{ '%.0f'|format(pr.freelancer.hourly_rate) }} €/h{% endif %}</small><br>
+        {% for s in pr.freelancer.skill_list %}<span class="tag {% if s in project.skill_list %}tag-match{% endif %}">{{ s }}</span>{% endfor %}
+        {% if pr.freelancer.portfolio_url %}<br><a href="{{ pr.freelancer.portfolio_url }}" target="_blank" rel="noopener">Portfolio</a>{% endif %}
+      </td>
+      <td class="r num">{{ pr.skill_match }}%</td>
+      <td class="r num {% if not pr.within_budget %}over{% endif %}">{{ '%.0f'|format(pr.amount) }} €{% if not pr.within_budget %}<br><small>fuera de presupuesto</small>{% endif %}</td>
+      <td class="r num">{{ pr.days }}</td>
+      <td class="msg">{{ pr.message }}</td>
+      <td>{% with value=pr.status %}{% include '_status.html' %}{% endwith %}</td>
+      <td class="actions-cell">
+        {% if project.status == 'abierto' %}
+          {% if pr.status != 'preseleccionada' and pr.status != 'rechazada' %}
+          <form method="post" action="{{ url_for('views.proposal_status', proposal_id=pr.id) }}"><input type="hidden" name="status" value="preseleccionada"><button class="btn btn-sm" type="submit">Preseleccionar</button></form>
+          {% endif %}
+          {% if pr.status != 'rechazada' %}
+          <form method="post" action="{{ url_for('views.proposal_status', proposal_id=pr.id) }}"><input type="hidden" name="status" value="rechazada"><button class="btn btn-sm" type="submit">Rechazar</button></form>
+          <form method="post" action="{{ url_for('views.proposal_hire', proposal_id=pr.id) }}" onsubmit="return confirm('¿Contratar esta propuesta? El resto se rechazará.')"><button class="btn btn-sm btn-primary" type="submit">Contratar</button></form>
+          {% else %}
+          <form method="post" action="{{ url_for('views.proposal_status', proposal_id=pr.id) }}"><input type="hidden" name="status" value="pendiente"><button class="btn btn-sm" type="submit">Reabrir</button></form>
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">Aún no hay propuestas. Comparte el enlace para freelancers.</p>
+{% endif %}
+{% endblock %}

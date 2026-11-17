@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Freelancers{% endblock %}
+{% block content %}
+<h1>Freelancers</h1>
+<p class="muted">Se registran automáticamente al enviar una propuesta (identificados por email).</p>
+{% if freelancers %}
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Nombre</th><th>Email</th><th>Habilidades</th><th class="r">Tarifa</th><th class="r">Propuestas</th><th>Portfolio</th></tr></thead>
+  <tbody>
+  {% for f in freelancers %}
+    <tr>
+      <td>{{ f.name }}</td>
+      <td class="num">{{ f.email }}</td>
+      <td>{% for s in f.skill_list %}<span class="tag">{{ s }}</span>{% endfor %}</td>
+      <td class="r num">{% if f.hourly_rate %}{{ '%.0f'|format(f.hourly_rate) }} €/h{% else %}—{% endif %}</td>
+      <td class="r num">{{ f.proposals|length }}</td>
+      <td>{% if f.portfolio_url %}<a href="{{ f.portfolio_url }}" target="_blank" rel="noopener">Ver</a>{% else %}—{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p class="empty">Todavía no hay freelancers registrados.</p>
+{% endif %}
+{% endblock %}

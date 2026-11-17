@@ -1,2 +1,3 @@
 auth: gunicorn auth_service.wsgi:app
 web: gunicorn frontend_service.wsgi:app 
+freelance: gunicorn freelance_service.wsgi:app

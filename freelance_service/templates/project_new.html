@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo proyecto{% endblock %}
+{% block content %}
+<h1>Publicar proyecto para freelance</h1>
+<form method="post" class="card form">
+  <label>Título<input name="title" required maxlength="200" value="{{ form.title }}"></label>
+  <label>Descripción y entregables<textarea name="description" required rows="5">{{ form.description }}</textarea></label>
+  <label>Habilidades requeridas <small>(separadas por comas)</small><input name="skills" placeholder="python, flask, sql" value="{{ form.skills }}"></label>
+  <div class="row">
+    <label>Presupuesto mínimo (€)<input name="budget_min" type="number" min="0" step="1" value="{{ form.budget_min }}"></label>
+    <label>Presupuesto máximo (€)<input name="budget_max" type="number" min="1" step="1" required value="{{ form.budget_max }}"></label>
+    <label>Fecha límite<input name="deadline" type="date" value="{{ form.deadline }}"></label>
+  </div>
+  <div class="actions"><button class="btn btn-primary" type="submit">Publicar</button></div>
+</form>
+{% endblock %}

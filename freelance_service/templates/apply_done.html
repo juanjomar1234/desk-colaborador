@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Propuesta enviada{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>Propuesta enviada</h1>
+  <p>Gracias, {{ proposal.freelancer.name }}. Hemos recibido tu propuesta de
+     <span class="num">{{ '%.0f'|format(proposal.amount) }} €</span> en {{ proposal.days }} días para «{{ project.title }}».</p>
+  <p><a href="{{ url_for('views.project_detail', project_id=project.id) }}">Volver al proyecto</a></p>
+</section>
+{% endblock %}
