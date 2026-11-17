@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from ..models.user import User
 from ..models.role import Role
@@ -53,7 +54,11 @@ def create_user():
     new_user = User(username=username, email=email, role=role)
     new_user.set_password(fields['password'])
     db.session.add(new_user)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'message': 'El usuario o el email ya existen'}), 409
 
     return jsonify({
         'message': 'Usuario creado exitosamente',

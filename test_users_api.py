@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -89,6 +90,15 @@ class TestCreateUserAPI(unittest.TestCase):
                                      'password': 'x'}, headers).status_code, 409)
         self.assertEqual(self._post({'username': 'otro', 'email': 'pepe@example.com',
                                      'password': 'x'}, headers).status_code, 409)
+
+    def test_race_on_commit_returns_conflict(self):
+        from auth_service import db
+        from sqlalchemy.exc import IntegrityError
+        headers = self._token('admin', 'admin123')
+        with patch.object(db.session, 'commit', side_effect=IntegrityError('x', {}, Exception())):
+            response = self._post({'username': 'nuevo', 'email': 'nuevo@example.com',
+                                   'password': 'x'}, headers)
+        self.assertEqual(response.status_code, 409)
 
     def test_register_cannot_self_assign_admin(self):
         response = self.client.post('/register', json={
