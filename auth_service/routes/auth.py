@@ -16,7 +16,12 @@ def index():
             'register': '/register',
             'verify': '/verify',
             'user': '/user',
-            'check-auth': '/check-auth'
+            'check-auth': '/check-auth',
+            'health': '/api/health',
+            'me': '/api/me',
+            'users': '/api/users/',
+            'roles': '/api/roles/',
+            'permissions': '/api/permissions/'
         }
     })
 
@@ -73,7 +78,7 @@ def login():
         # Buscar usuario real
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            access_token = create_access_token(identity=user.username)
+            access_token = create_access_token(identity=user.username, additional_claims={'uid': user.id})
             return jsonify({
                 'message': 'Login successful',
                 'access_token': access_token

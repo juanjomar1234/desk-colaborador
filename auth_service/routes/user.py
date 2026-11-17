@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
+from .helpers import get_current_user
 from ..models.user import User
 from .. import db
 
@@ -9,7 +10,7 @@ user_bp = Blueprint('user', __name__, url_prefix='/api/users')
 @jwt_required()
 def get_users():
     # Verificar si el usuario tiene rol de administrador
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -23,7 +24,7 @@ def get_users():
 @jwt_required()
 def get_user(user_id):
     # Verificar si el usuario tiene rol de administrador o es el mismo usuario
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin' and current_user.get('id') != user_id:
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -38,7 +39,7 @@ def get_user(user_id):
 @jwt_required()
 def update_user(user_id):
     # Verificar si el usuario tiene rol de administrador o es el mismo usuario
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin' and current_user.get('id') != user_id:
         return jsonify({'message': 'No autorizado'}), 403
     
@@ -75,7 +76,7 @@ def update_user(user_id):
 @jwt_required()
 def delete_user(user_id):
     # Solo administradores pueden eliminar usuarios
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     if current_user.get('role') != 'admin':
         return jsonify({'message': 'No autorizado'}), 403
     

@@ -68,6 +68,20 @@ Para entorno de desarrollo, use el archivo docker-compose.yml estándar:
 docker-compose up -d --build
 ```
 
+## API REST (Auth Service)
+
+Autenticación: `Authorization: Bearer <access_token>` (obtenido con `POST /login`).
+
+| Método | Ruta | Auth | Descripción |
+|---|---|---|---|
+| GET | `/api/health` | No | Estado del servicio y de la BD (`200` ok / `503` degradado) |
+| GET | `/api/me` | JWT | Perfil del usuario autenticado |
+| GET/PUT/DELETE | `/api/users/`, `/api/users/<id>` | JWT (admin o propio usuario) | Gestión de usuarios |
+| GET/POST/PUT/DELETE | `/api/roles/`, `/api/roles/<id>` | JWT (admin) | Gestión de roles |
+| GET/POST/PUT/DELETE | `/api/permissions/`, `/api/permissions/<id>` | JWT (admin) | Gestión de permisos |
+
+Pruebas de la API: `python -m pytest test_api.py -v`
+
 ## Pruebas
 
 Para ejecutar las pruebas automatizadas:
