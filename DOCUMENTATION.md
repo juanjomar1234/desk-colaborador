@@ -155,6 +155,16 @@ Los modelos de Rol y Permiso gestionan los roles y permisos disponibles en el si
 - `PUT /api/permissions/<id>`: Actualiza un permiso (solo admin)
 - `DELETE /api/permissions/<id>`: Elimina un permiso (solo admin)
 
+#### 3.4.5 Rutas de Aplicaciones (application.py)
+
+Catálogo de aplicaciones que se muestran como tarjetas en el frontend. Requiere JWT (`Authorization: Bearer <token>`).
+
+- `GET /api/applications/`: Lista las aplicaciones activas (admin: `?all=true` incluye inactivas)
+- `GET /api/applications/<id>`: Obtiene una aplicación (404 si está inactiva y no eres admin)
+- `POST /api/applications/`: Crea una aplicación (solo admin). Body: `name` (obligatorio), `description`, `icon`, `url`, `active`
+- `PUT /api/applications/<id>`: Actualiza una aplicación (solo admin)
+- `DELETE /api/applications/<id>`: Elimina una aplicación (solo admin)
+
 ### 3.5 Flujo de Autenticación
 
 1. El usuario envía credenciales (username/password) al endpoint `/api/auth/login`
